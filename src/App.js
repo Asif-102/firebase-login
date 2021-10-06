@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import './App.css';
 import initializeAuthentication from './Firebase/firebase.init';
 
@@ -8,7 +8,7 @@ initializeAuthentication();
 function App() {
 
   const auth = getAuth();
-
+  const [loginUserName, setLoginUserName] = useState('');
   const [userInfo, setUserInfo] = useState({ isLogin: false });
   const [registerInfo, setRegisterInfo] = useState({ error: '', success: '' })
 
@@ -17,10 +17,12 @@ function App() {
     logingStatus.isLogin = e.target.checked;
     setUserInfo(logingStatus);
 
-    const clearMessage = {...registerInfo};
+    const clearMessage = { ...registerInfo };
     clearMessage.error = '';
     clearMessage.success = '';
-    setRegisterInfo(clearMessage); 
+    setRegisterInfo(clearMessage);
+
+    setLoginUserName('');
   }
 
   const handleBlur = (e) => {
@@ -45,6 +47,10 @@ function App() {
       .then((userCredential) => {
         // Signed in 
         const user = userCredential.user;
+        // console.log(user);
+        const { displayName, email } = user;
+        setLoginUserName(displayName);
+
         const regSuccess = { ...registerInfo };
         regSuccess.error = '';
         regSuccess.success = 'Login Success';
@@ -72,6 +78,8 @@ function App() {
         regSuccess.error = '';
         regSuccess.success = 'Register Success';
         setRegisterInfo(regSuccess);
+        setUserName();
+        setLoginUserName('');
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -81,11 +89,21 @@ function App() {
         regError.error = errorMessage;
         regError.success = '';
         setRegisterInfo(regError);
+        setLoginUserName('');
       });
+  }
+
+  const setUserName = () => {
+    updateProfile(auth.currentUser, { displayName: userInfo.name })
+      .then(() => {
+        // Profile updated!
+        // ...
+      })
   }
 
   return (
     <div>
+
       <div className="login-container">
 
         {/* login form */}
@@ -93,6 +111,11 @@ function App() {
         <form onSubmit={handleRegistration} className="login-form">
           <h2>Please {userInfo.isLogin ? 'Login' : 'Register'}</h2>
 
+          {
+            !userInfo.isLogin && <input type="text" name="name" placeholder="Your Name"
+              onBlur={handleBlur}
+              required />
+          }
           <input type="email" name="email" placeholder="Your Email"
             onBlur={handleBlur}
             required />
@@ -111,6 +134,7 @@ function App() {
       </div>
       <div className="error-message">{registerInfo.error}</div>
       <div className="success-message">{registerInfo.success}</div>
+      {loginUserName && <p className="welcome-user">Welcome {loginUserName}</p>}
     </div>
   );
 }
