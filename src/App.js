@@ -8,6 +8,7 @@ initializeAuthentication();
 function App() {
 
   const auth = getAuth();
+
   const [loginUserName, setLoginUserName] = useState('');
   const [userInfo, setUserInfo] = useState({ isLogin: false });
   const [registerInfo, setRegisterInfo] = useState({ error: '', success: '' })
@@ -84,7 +85,7 @@ function App() {
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        // console.log(errorMessage, errorCode);
+        console.log(errorMessage, errorCode);
         const regError = { ...registerInfo };
         regError.error = errorMessage;
         regError.success = '';
