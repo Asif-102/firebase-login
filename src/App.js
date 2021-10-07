@@ -128,6 +128,7 @@ function App() {
             <input type="checkbox" name="switchForm" id="switchForm"
               onChange={toggleLogin} />
             <label htmlFor="switchForm">Already Registered?</label>
+            {userInfo.isLogin && <span className="forget-pass"> forget pass</span>}
           </div>
 
           <button type="submit">{userInfo.isLogin ? 'Login' : 'Register'}</button>

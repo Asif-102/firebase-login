@@ -48,3 +48,9 @@
   text-align: center;
   color: royalblue;
 }
+
+.forget-pass{
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+}
